@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consultor de Vendas - FAQ</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-height: 100vh; }
+  
+  .header { background: linear-gradient(135deg, #1a1a2e, #16213e); color: white; padding: 1.5rem; text-align: center; }
+  .header h1 { font-size: 1.4rem; margin-bottom: 0.3rem; }
+  .header p { font-size: 0.85rem; opacity: 0.7; }
+  
+  .config { background: #fff3cd; padding: 8px 16px; font-size: 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .config input { flex: 1; min-width: 200px; padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
+  
+  .container { max-width: 800px; margin: 1.5rem auto; padding: 0 1rem; }
+  
+  .filtros { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .filtro-btn { padding: 6px 14px; border-radius: 20px; border: 1.5px solid #ddd; background: white; cursor: pointer; font-size: 12px; font-weight: 600; color: #555; transition: all 0.15s; }
+  .filtro-btn:hover { border-color: #667eea; color: #667eea; }
+  .filtro-btn.active { background: #667eea; color: white; border-color: #667eea; }
+  
+  .busca { display: flex; gap: 8px; margin-bottom: 1.5rem; }
+  .busca input { flex: 1; padding: 10px 14px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; }
+  .busca input:focus { outline: none; border-color: #667eea; }
+  .busca button { padding: 10px 20px; border: none; border-radius: 10px; background: #667eea; color: white; font-weight: 600; cursor: pointer; font-size: 14px; }
+  
+  .dica-dia { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; cursor: pointer; transition: transform 0.15s; }
+  .dica-dia:hover { transform: scale(1.01); }
+  .dica-dia h3 { font-size: 0.85rem; opacity: 0.8; margin-bottom: 0.5rem; }
+  .dica-dia .frase { font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; }
+  .dica-dia .detalhe { font-size: 0.85rem; opacity: 0.9; line-height: 1.5; }
+  
+  .card-faq { background: white; border-radius: 12px; border: 1px solid #e8e8e8; padding: 1.25rem; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+  .card-faq .cat { font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 10px; display: inline-block; margin-bottom: 8px; text-transform: uppercase; }
+  .cat-rapport { background: #e8f5e9; color: #2e7d32; }
+  .cat-escuta_ativa { background: #e3f2fd; color: #1565c0; }
+  .cat-gatilhos_mentais { background: #fce4ec; color: #c62828; }
+  .cat-objecoes { background: #fff3e0; color: #e65100; }
+  .cat-fechamento { background: #f3e5f5; color: #6a1b9a; }
+  .cat-pos_venda { background: #e0f2f1; color: #00695c; }
+  .cat-geral { background: #f5f5f5; color: #555; }
+  
+  .card-faq h3 { font-size: 1rem; color: #1a1a1a; margin-bottom: 0.5rem; }
+  .card-faq .resposta { font-size: 0.9rem; color: #555; line-height: 1.7; margin-bottom: 0.75rem; }
+  .card-faq .exemplo { background: #f8f9fa; border-left: 3px solid #667eea; border-radius: 0 6px 6px 0; padding: 8px 12px; font-size: 0.85rem; color: #444; margin-bottom: 0.5rem; line-height: 1.6; }
+  .card-faq .dica { background: #e8f5e9; border-left: 3px solid #4caf50; border-radius: 0 6px 6px 0; padding: 8px 12px; font-size: 0.85rem; color: #2e7d32; margin-bottom: 0.5rem; }
+  .card-faq .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+  .card-faq .tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #f0f0f0; color: #777; }
+  .card-faq .nivel { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+  .nivel-iniciante { background: #e8f5e9; color: #2e7d32; }
+  .nivel-intermediario { background: #fff3e0; color: #e65100; }
+  .nivel-avancado { background: #fce4ec; color: #c62828; }
+  
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .stat { background: white; border-radius: 10px; padding: 1rem; text-align: center; border: 1px solid #eee; }
+  .stat .num { font-size: 1.5rem; font-weight: 700; color: #667eea; }
+  .stat .lbl { font-size: 11px; color: #999; margin-top: 2px; }
+  
+  .vazio { text-align: center; padding: 3rem; color: #999; }
+  .loading { text-align: center; padding: 2rem; color: #999; }
+  
+  .add-form { background: white; border-radius: 12px; border: 1px solid #e8e8e8; padding: 1.25rem; margin-bottom: 1.5rem; display: none; }
+  .add-form h3 { font-size: 1rem; margin-bottom: 1rem; color: #333; }
+  .add-form label { font-size: 0.8rem; font-weight: 600; color: #555; display: block; margin-bottom: 3px; margin-top: 10px; }
+  .add-form input, .add-form textarea, .add-form select { width: 100%; padding: 8px 10px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 0.85rem; font-family: inherit; }
+  .add-form textarea { height: 80px; resize: vertical; }
+  .add-form .btns { display: flex; gap: 8px; margin-top: 1rem; }
+  .add-form .btns button { padding: 8px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
+  .btn-salvar { background: #4caf50; color: white; }
+  .btn-cancelar { background: #eee; color: #555; }
+  
+  .toggle-add { padding: 8px 16px; border: 2px dashed #ccc; border-radius: 10px; background: transparent; cursor: pointer; font-size: 13px; color: #888; width: 100%; margin-bottom: 1rem; transition: all 0.15s; }
+  .toggle-add:hover { border-color: #667eea; color: #667eea; }
+  
+  .msg { padding: 10px 16px; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem; font-weight: 500; display: none; }
+  .msg.ok { display: block; background: #e8f5e9; color: #2e7d32; }
+  .msg.err { display: block; background: #fce4ec; color: #c62828; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🎯 Consultor de Vendas</h1>
+  <p>Base de conhecimento sobre técnicas de vendas e rapport</p>
+</div>
+
+<div class="config">
+  <strong>API:</strong>
+  <input type="text" id="apiUrl" value="http://localhost:5000" placeholder="URL da API">
+  <button onclick="carregarTudo()" style="padding:4px 12px;border:1px solid #ccc;border-radius:4px;background:white;cursor:pointer;font-size:12px">Conectar</button>
+</div>
+
+<div class="container">
+  <div id="msg" class="msg"></div>
+  
+  <div id="dicaDia" class="dica-dia" onclick="carregarDica()">
+    <h3>💡 DICA DO DIA — clique para sortear</h3>
+    <div class="frase" id="dicaFrase">Carregando...</div>
+    <div class="detalhe" id="dicaDetalhe"></div>
+  </div>
+  
+  <div id="statsContainer" class="stats"></div>
+  
+  <div class="busca">
+    <input type="text" id="buscaInput" placeholder="Buscar por palavra-chave (ex: preço, rapport, objeção...)" onkeypress="if(event.key==='Enter')buscar()">
+    <button onclick="buscar()">🔍 Buscar</button>
+  </div>
+  
+  <div class="filtros" id="filtros">
+    <button class="filtro-btn active" onclick="filtrar('', this)">Todas</button>
+    <button class="filtro-btn" onclick="filtrar('rapport', this)">Rapport</button>
+    <button class="filtro-btn" onclick="filtrar('escuta_ativa', this)">Escuta ativa</button>
+    <button class="filtro-btn" onclick="filtrar('gatilhos_mentais', this)">Gatilhos mentais</button>
+    <button class="filtro-btn" onclick="filtrar('objecoes', this)">Objeções</button>
+    <button class="filtro-btn" onclick="filtrar('fechamento', this)">Fechamento</button>
+    <button class="filtro-btn" onclick="filtrar('pos_venda', this)">Pós-venda</button>
+  </div>
+  
+  <button class="toggle-add" onclick="toggleForm()">➕ Adicionar nova pergunta (alunos podem contribuir!)</button>
+  
+  <div id="addForm" class="add-form">
+    <h3>📝 Nova pergunta</h3>
+    <label>Seu nome</label>
+    <input type="text" id="addAutor" placeholder="Ex: João Silva">
+    <label>Categoria</label>
+    <select id="addCat">
+      <option value="rapport">Rapport</option>
+      <option value="escuta_ativa">Escuta ativa</option>
+      <option value="gatilhos_mentais">Gatilhos mentais</option>
+      <option value="objecoes">Objeções</option>
+      <option value="fechamento">Fechamento</option>
+      <option value="pos_venda">Pós-venda</option>
+    </select>
+    <label>Pergunta *</label>
+    <input type="text" id="addPergunta" placeholder="Ex: Como lidar com cliente indeciso?">
+    <label>Resposta *</label>
+    <textarea id="addResposta" placeholder="Explique a técnica..."></textarea>
+    <label>Exemplo prático</label>
+    <textarea id="addExemplo" placeholder="Dê um exemplo de diálogo..." style="height:60px"></textarea>
+    <label>Dica rápida</label>
+    <input type="text" id="addDica" placeholder="Uma frase curta e memorável">
+    <div class="btns">
+      <button class="btn-salvar" onclick="salvarNova()">💾 Salvar</button>
+      <button class="btn-cancelar" onclick="toggleForm()">Cancelar</button>
+    </div>
+  </div>
+  
+  <div id="listaFaq"><div class="loading">Conectando à API...</div></div>
+</div>
+
+<script>
+  function getUrl() { return document.getElementById('apiUrl').value.replace(/\/$/, ''); }
+  
+  function mostrarMsg(txt, tipo) {
+    const el = document.getElementById('msg');
+    el.textContent = txt;
+    el.className = 'msg ' + tipo;
+    setTimeout(() => el.className = 'msg', 4000);
+  }
+  
+  async function carregarTudo() {
+    await carregarDica();
+    await carregarStats();
+    await carregarLista('');
+  }
+  
+  async function carregarDica() {
+    try {
+      const r = await fetch(`${getUrl()}/api/dica-do-dia`);
+      const d = await r.json();
+      if (d.sucesso) {
+        document.getElementById('dicaFrase').textContent = d.dica.dica_rapida || d.dica.pergunta;
+        document.getElementById('dicaDetalhe').textContent = d.dica.exemplo || '';
+      }
+    } catch(e) { document.getElementById('dicaFrase').textContent = 'Erro ao conectar à API'; }
+  }
+  
+  async function carregarStats() {
+    try {
+      const r = await fetch(`${getUrl()}/api/estatisticas`);
+      const d = await r.json();
+      if (d.sucesso) {
+        let html = `<div class="stat"><div class="num">${d.total_perguntas}</div><div class="lbl">Perguntas</div></div>`;
+        for (const [cat, n] of Object.entries(d.por_categoria)) {
+          html += `<div class="stat"><div class="num">${n}</div><div class="lbl">${cat.replace('_',' ')}</div></div>`;
+        }
+        document.getElementById('statsContainer').innerHTML = html;
+      }
+    } catch(e) {}
+  }
+  
+  async function carregarLista(categoria) {
+    const container = document.getElementById('listaFaq');
+    container.innerHTML = '<div class="loading">Carregando...</div>';
+    try {
+      const url = categoria ? `${getUrl()}/api/faq?categoria=${categoria}` : `${getUrl()}/api/faq`;
+      const r = await fetch(url);
+      const d = await r.json();
+      renderizar(d.perguntas || []);
+    } catch(e) {
+      container.innerHTML = '<div class="vazio">❌ Não consegui conectar. Verifique se a API está rodando.</div>';
+    }
+  }
+  
+  async function buscar() {
+    const q = document.getElementById('buscaInput').value.trim();
+    if (!q) { carregarLista(''); return; }
+    const container = document.getElementById('listaFaq');
+    container.innerHTML = '<div class="loading">Buscando...</div>';
+    try {
+      const r = await fetch(`${getUrl()}/api/faq/buscar?q=${encodeURIComponent(q)}`);
+      const d = await r.json();
+      renderizar(d.resultados || []);
+    } catch(e) {
+      container.innerHTML = '<div class="vazio">Erro na busca</div>';
+    }
+  }
+  
+  function filtrar(cat, btn) {
+    document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    carregarLista(cat);
+  }
+  
+  function renderizar(lista) {
+    const container = document.getElementById('listaFaq');
+    if (!lista.length) { container.innerHTML = '<div class="vazio">Nenhuma pergunta encontrada</div>'; return; }
+    
+    container.innerHTML = lista.map(f => `
+      <div class="card-faq">
+        <span class="cat cat-${f.categoria || 'geral'}">${(f.categoria || 'geral').replace('_',' ')}</span>
+        <span class="nivel nivel-${f.nivel || 'iniciante'}">${f.nivel || 'iniciante'}</span>
+        ${f.autor ? `<span style="font-size:11px;color:#999;float:right">por ${f.autor}</span>` : ''}
+        <h3>${f.pergunta}</h3>
+        <p class="resposta">${f.resposta}</p>
+        ${f.exemplo ? `<div class="exemplo">💬 <strong>Exemplo:</strong> ${f.exemplo}</div>` : ''}
+        ${f.dica_rapida ? `<div class="dica">⚡ <strong>Dica rápida:</strong> ${f.dica_rapida}</div>` : ''}
+        ${f.tags && f.tags.length ? `<div class="tags">${f.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>` : ''}
+      </div>
+    `).join('');
+  }
+  
+  function toggleForm() {
+    const f = document.getElementById('addForm');
+    f.style.display = f.style.display === 'block' ? 'none' : 'block';
+  }
+  
+  async function salvarNova() {
+    const dados = {
+      autor: document.getElementById('addAutor').value || 'Aluno anônimo',
+      categoria: document.getElementById('addCat').value,
+      pergunta: document.getElementById('addPergunta').value,
+      resposta: document.getElementById('addResposta').value,
+      exemplo: document.getElementById('addExemplo').value,
+      dica_rapida: document.getElementById('addDica').value,
+      nivel: 'iniciante',
+      tags: []
+    };
+    if (!dados.pergunta || !dados.resposta) { mostrarMsg('Preencha pergunta e resposta!', 'err'); return; }
+    try {
+      const r = await fetch(`${getUrl()}/api/faq`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(dados)
+      });
+      const d = await r.json();
+      if (d.sucesso) {
+        mostrarMsg(`✅ ${d.mensagem}`, 'ok');
+        toggleForm();
+        ['addAutor','addPergunta','addResposta','addExemplo','addDica'].forEach(id => document.getElementById(id).value = '');
+        carregarLista('');
+        carregarStats();
+      } else { mostrarMsg(d.mensagem, 'err'); }
+    } catch(e) { mostrarMsg('Erro ao salvar', 'err'); }
+  }
+  
+  carregarTudo();
+</script>
+
+</body>
+</html>
